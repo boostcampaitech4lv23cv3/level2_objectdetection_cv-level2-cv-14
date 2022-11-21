@@ -1,8 +1,8 @@
 _base_ = [
-    './_base_/datasets/coco_detection.py',
-    './_base_/models/htc.py',
-    './_base_/schedules/schedule_adamw_1x.py',
-    './_base_/default_runtime.py',
+    './datasets/coco_detection.py',
+    './models/htc.py',
+    './schedules/schedule_adamw_1x.py',
+    './default_runtime.py',
 ]
 
 pretrained = 'https://github.com/SwinTransformer/storage/releases/download/v1.0.0/swin_large_patch4_window7_224_22k.pth'  # noqa
