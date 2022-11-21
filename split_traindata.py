@@ -41,8 +41,8 @@ def split_dataset(input_json, val_ratio, random_seed):
         "annotations": val_annos,
     }
 
-    output_train_json = f"dataset/train_randomsplit_{random_seed}.json"
-    output_val_json = f"dataset/val_randomsplit_{random_seed}.json"
+    output_train_json = f"../dataset/train_randomsplit_{random_seed}.json"
+    output_val_json = f"../dataset/val_randomsplit_{random_seed}.json"
 
     print(f"write {output_train_json}")
     with open(output_train_json, "w") as train_writer:
@@ -54,4 +54,4 @@ def split_dataset(input_json, val_ratio, random_seed):
 
 
 if __name__ == "__main__":
-    split_dataset("dataset/train.json", val_ratio=0.2, random_seed=2022)
+    split_dataset("../dataset/train.json", val_ratio=0.2, random_seed=2022)
