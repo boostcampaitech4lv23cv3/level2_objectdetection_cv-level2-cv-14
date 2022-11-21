@@ -8,7 +8,6 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-env/
 build/
 develop-eggs/
 dist/
@@ -24,6 +23,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -45,6 +45,7 @@ nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
+.pytest_cache/
 
 # Translations
 *.mo
@@ -53,6 +54,7 @@ coverage.xml
 # Django stuff:
 *.log
 local_settings.py
+db.sqlite3
 
 # Flask stuff:
 instance/
@@ -62,7 +64,8 @@ instance/
 .scrapy
 
 # Sphinx documentation
-docs/_build/
+docs/en/_build/
+docs/zh_cn/_build/
 
 # PyBuilder
 target/
@@ -79,13 +82,14 @@ celerybeat-schedule
 # SageMath parsed files
 *.sage.py
 
-# dotenv
+# Environments
 .env
-
-# virtualenv
 .venv
+env/
 venv/
 ENV/
+env.bak/
+venv.bak/
 
 # Spyder project settings
 .spyderproject
@@ -100,16 +104,25 @@ ENV/
 # mypy
 .mypy_cache/
 
-# input data, saved log, checkpoints
 data/
-input/
-saved/
-datasets/
+data
+.vscode
+.idea
+.DS_Store
 
-# editor, os cache directory
-.vscode/
-.idea/
-__MACOSX/
+# custom
+*.pkl
+*.pkl.json
+*.log.json
+docs/modelzoo_statistics.md
+mmdet/.mim
+work_dirs/
+
+# Pytorch
+*.pth
+*.py~
+*.sh~
+
 
 .DS_Store
 wandb
@@ -117,3 +130,4 @@ dataset
 work_dirs
 submission.csv
 requirements.txt
+mmdetection

@@ -27,13 +27,13 @@ def parse_args():
     parser.add_argument(
         "-c",
         "--config",
-        default="Experiment/_base_/faster_rcnn_r50.py",
+        default="Experiment/yolov3/yolo.py",
         type=str,
         help="config file path")
     parser.add_argument(
         "-r",
         "--checkpoint",
-        default="work_dirs/faster_rcnn_r50/epoch_3.pth",
+        default="best.pt",
         type=str,
         help="path to latest checkpoint",
     )
