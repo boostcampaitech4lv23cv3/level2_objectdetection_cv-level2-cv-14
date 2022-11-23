@@ -15,12 +15,12 @@ device = torch.device("cuda" if use_cuda else "cpu")
 #  'Clothing': 468}
 
 """
-아래 코드를 모델 폴더 내 .py 파일에 넣고 loss_cls 수정
+아래 코드를 모델 폴더 내 .py 파일에 넣고 roi head 의 loss_cls 수정
 """
 
 num_ins = [3966, 6352, 897, 936, 982, 2943, 1263, 5178, 159, 468] # 각 클래스 별 데이터 개수
-cnl_weights = [1 - (x/(sum(num_ins))) for x in num_ins] # weight 계산
-class_weights = torch.FloatTensor(cnl_weights).to(device) # to Tensor
+class_weights = [1 - (x/(sum(num_ins))) for x in num_ins] # weight 계산
+
 
 
 
@@ -28,13 +28,12 @@ class_weights = torch.FloatTensor(cnl_weights).to(device) # to Tensor
 """ 사용 예시 """
 
 num_ins = [3966, 6352, 897, 936, 982, 2943, 1263, 5178, 159, 468]
-cnl_weights = [1 - (x/(sum(num_ins))) for x in num_ins]
-class_weights = torch.FloatTensor(cnl_weights).to(device)
+class_weights = [1 - (x/(sum(num_ins))) for x in num_ins]
 
 # model settings
 model = dict(
     type='FasterRCNN',
-    backbone=dict(
+    # backbone=dict(
     #     type='ResNet',
     #     depth=50,
     #     num_stages=4,
@@ -62,14 +61,9 @@ model = dict(
     #         type='DeltaXYWHBBoxCoder',
     #         target_means=[.0, .0, .0, .0],
     #         target_stds=[1.0, 1.0, 1.0, 1.0]),
-        loss_cls=dict(
-            type='CrossEntropyLoss', 
-            use_sigmoid=True, 
-            loss_weight=1.0,
-            weight=class_weights # weight=class_weights 집어넣기
-            ),
+    #     loss_cls=dict(type='CrossEntropyLoss', use_sigmoid=True, loss_weight=1.0),
     #     loss_bbox=dict(type='L1Loss', loss_weight=1.0)),
-    # roi_head=dict(
+    roi_head=dict(
     #     type='StandardRoIHead',
     #     bbox_roi_extractor=dict(
     #         type='SingleRoIExtractor',
@@ -87,8 +81,12 @@ model = dict(
     #             target_means=[0., 0., 0., 0.],
     #             target_stds=[0.1, 0.1, 0.2, 0.2]),
     #         reg_class_agnostic=False,
-    #         loss_cls=dict(
-    #             type='CrossEntropyLoss', use_sigmoid=False, loss_weight=1.0),
+        loss_cls=dict(
+                type='CrossEntropyLoss', 
+                use_sigmoid=False, 
+                loss_weight=1.0,
+                class_weight=class_weights # class_weight 를 집어넣는다
+                ),
     #         loss_bbox=dict(type='L1Loss', loss_weight=1.0))
         ), 
     )
