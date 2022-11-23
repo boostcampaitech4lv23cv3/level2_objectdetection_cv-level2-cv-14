@@ -8,11 +8,17 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from pycocotools.coco import COCO
 from pathlib import Path
+import random
 
 
 @st.cache(allow_output_mutation=True)
 def load_model(config, checkpint, device):
     return init_detector(config, checkpint, device=device)
+
+
+@st.cache(allow_output_mutation=True)
+def load_coco(path):
+    return COCO(path)
 
 
 def read_markdown_file(markdown_file):
@@ -66,20 +72,23 @@ def show_prediction(model, select, img, *classes):
     st.pyplot(fig)
 
 
-def main(config_file, checkpoint_file, train_json, val_json):
+def main(config_file, checkpoint_file, train_json, val_json, test_path):
     """
     Args:
         config_file (str): 확인할 모델의 config 주소를 입력하세요
         checkpoint_file (str): 사전에 훈련된 모델의 checkpoint 주소를 입력하세요
-        train_json (str): 확인할 train data의 주소를 입력하세요
-        val_json (str): 확인할 validation data의 주소를 입력하세요
+        train_json (str): 확인할 train data의 json 주소를 입력하세요
+        val_json (str): 확인할 validation data의 json 주소를 입력하세요
+        test_path (str): 확인할 test data의 폴더 주소를 입력하세요
     """
 
     st.title("재활용 품목 분류를 위한 Object Detection")
     if "model" not in st.session_state:
         st.session_state.model = load_model(config_file, checkpoint_file, "cuda")
-    if "coco" not in st.session_state:
-        st.session_state.coco = COCO("../dataset/train.json")
+    if "train_coco" not in st.session_state:
+        st.session_state.train_coco = COCO(train_json)
+    if "valid_coco" not in st.session_state:
+        st.session_state.valid_coco = COCO(val_json)
     if "color" not in st.session_state:
         st.session_state.color = [
             (1, 0, 0),  # Red
@@ -120,57 +129,48 @@ def main(config_file, checkpoint_file, train_json, val_json):
         "Clothing": Clothing,
     }
 
-    tab1, tab2 = st.tabs(["Train_img_View", "Test_img_View"])
+    tab1, tab2 = st.tabs(["img_View", "Data_argument"])
     with tab1:
-        img_list = st.radio("Select Train or Validation", ("Train", "Validation"))
-        options = st.multiselect(
-            "포함되어야 하는 class를 선택해주세요",
-            classes.keys(),
+        img_type = st.radio(
+            "Select Train or Validation or Test", ("Train", "Validation", "Test")
         )
-        options_dict = {i: j for i, j in zip(classes.keys(), range(10))}
 
-        if img_list == "Train":
-            img_box = st.selectbox(
-                "Choose img",
-                sorted(
-                    COCO(train_json).getImgIds(
-                        catIds=[options_dict[opt] for opt in options]
-                    )
-                ),
-            )
-
-        elif img_list == "Validation":
-            img_box = st.selectbox(
-                "Choose img",
-                sorted(
-                    COCO(val_json).getImgIds(
-                        catIds=[options_dict[opt] for opt in options]
-                    )
-                ),
-            )
-
-        img_box = str(img_box).zfill(4) + ".jpg"
-
-        if img_box:
-            col1, col2 = st.columns(2)
-            st.write()
-            with col1:
-                st.header("Ground Truth")
-                show_train_img(img_box, st.session_state.coco, *classes.values())
-            with col2:
-                st.header("Predict bbox")
+        if img_type == "Test":
+            test_img = st.selectbox("Choose Test img", sorted(os.listdir(test_path)))
+            if test_img:
                 show_prediction(
-                    st.session_state.model, "train", img_box, *classes.values()
+                    st.session_state.model, "test", test_img, *classes.values()
                 )
-            st.markdown(read_markdown_file("box_color.md"), unsafe_allow_html=True)
+        else:
+            if img_type == "Train":
+                my_coco = st.session_state.train_coco
+            elif img_type == "Validation":
+                my_coco = st.session_state.valid_coco
+            options = st.multiselect("포함되어야 하는 class를 선택해주세요", classes.keys())
+            options_dict = {i: j for i, j in zip(classes.keys(), range(10))}
+            img_list = sorted(
+                my_coco.getImgIds(catIds=[options_dict[opt] for opt in options])
+            )
+            img_box = st.selectbox("Choose img", img_list)
 
-    with tab2:
-        test_img = st.selectbox(
-            "Choose Test img", sorted(os.listdir("../dataset/test/"))
-        )
-        if test_img:
-            show_prediction(st.session_state.model, "test", test_img, *classes.values())
+            if st.button("random choice"):
+                img_box = random.choice(img_list)
+                st.write(f"random choice img : {img_box}")
+
+            img_box = str(img_box).zfill(4) + ".jpg"
+            if img_box:
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.header("Ground Truth")
+                    show_train_img(img_box, my_coco, *classes.values())
+                with col2:
+                    st.header("Predict bbox")
+                    show_prediction(
+                        st.session_state.model, "train", img_box, *classes.values()
+                    )
         st.markdown(read_markdown_file("box_color.md"), unsafe_allow_html=True)
+    with tab2:
+        st.write("developping...")
 
 
 if __name__ == "__main__":
@@ -178,4 +178,5 @@ if __name__ == "__main__":
     checkpoint_file = "/opt/ml/baseline/work_dirs/swin/best.pt"
     train_json = "../dataset/train_randomsplit_2022.json"
     val_json = "../dataset/val_randomsplit_2022.json"
-    main(config_file, checkpoint_file, train_json, val_json)
+    test_path = "../dataset/test/"
+    main(config_file, checkpoint_file, train_json, val_json, test_path)
