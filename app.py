@@ -137,10 +137,14 @@ def main(config_file, checkpoint_file, train_json, val_json, test_path):
 
         if img_type == "Test":
             test_img = st.selectbox("Choose Test img", sorted(os.listdir(test_path)))
+            if st.button("random choice"):
+                test_img = random.choice(sorted(os.listdir(test_path)))
+                st.write(test_img)
             if test_img:
                 show_prediction(
                     st.session_state.model, "test", test_img, *classes.values()
                 )
+
         else:
             if img_type == "Train":
                 my_coco = st.session_state.train_coco
