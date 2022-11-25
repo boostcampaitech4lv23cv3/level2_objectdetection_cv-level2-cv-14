@@ -49,14 +49,14 @@ def show_train_img(img, coco, *classes):
     st.pyplot(fig)
 
 
-def show_prediction(model, select, img, *classes):
+def show_prediction(model, select, img, threshold, *classes):
     fig, ax = plt.subplots()
     plt.axis("off")
     im = mmcv.imread(f"../dataset/{select}/" + img)
     result = inference_detector(model, im)
     cat = [idx for idx, value in enumerate(classes) if value]
     for c in cat:
-        boxes = result[c][result[c][:, 4] > 0.3][:, :-1]
+        boxes = result[c][result[c][:, 4] > threshold][:, :-1]
         for box in boxes:
             b2 = patches.Rectangle(
                 (box[0], box[1]),
@@ -89,6 +89,8 @@ def main(config_file, checkpoint_file, train_json, val_json, test_path):
         st.session_state.train_coco = COCO(train_json)
     if "valid_coco" not in st.session_state:
         st.session_state.valid_coco = COCO(val_json)
+    if "index" not in st.session_state:
+        st.session_state.index = 0
     if "color" not in st.session_state:
         st.session_state.color = [
             (1, 0, 0),  # Red
@@ -115,6 +117,7 @@ def main(config_file, checkpoint_file, train_json, val_json, test_path):
         Plastic_bag = st.checkbox("Plastic_bag", value=True)
         Battery = st.checkbox("Battery", value=True)
         Clothing = st.checkbox("Clothing", value=True)
+        threshold = st.slider("threshold", 0.0, 1.0, 0.3, 0.01)
 
     classes = {
         "General_trash": General_trash,
@@ -136,15 +139,21 @@ def main(config_file, checkpoint_file, train_json, val_json, test_path):
         )
 
         if img_type == "Test":
-            test_img = st.selectbox("Choose Test img", sorted(os.listdir(test_path)))
+            img_list = sorted(os.listdir(test_path))
+            if len(img_list) <= st.session_state.index:
+                st.session_state = 0
+
             if st.button("random choice"):
-                test_img = random.choice(sorted(os.listdir(test_path)))
-                st.write(test_img)
+                st.session_state.index = random.choice(range(len(img_list)))
+            test_img = st.selectbox("Choose img", img_list, st.session_state.index)
             if test_img:
                 show_prediction(
-                    st.session_state.model, "test", test_img, *classes.values()
+                    st.session_state.model,
+                    "test",
+                    test_img,
+                    threshold,
+                    *classes.values(),
                 )
-
         else:
             if img_type == "Train":
                 my_coco = st.session_state.train_coco
@@ -155,11 +164,13 @@ def main(config_file, checkpoint_file, train_json, val_json, test_path):
             img_list = sorted(
                 my_coco.getImgIds(catIds=[options_dict[opt] for opt in options])
             )
-            img_box = st.selectbox("Choose img", img_list)
+            if len(img_list) <= st.session_state.index:
+                st.session_state = 0
 
             if st.button("random choice"):
-                img_box = random.choice(img_list)
-                st.write(f"random choice img : {img_box}")
+                st.session_state.index = random.choice(range(len(img_list)))
+
+            img_box = st.selectbox("Choose img", img_list, st.session_state.index)
 
             img_box = str(img_box).zfill(4) + ".jpg"
             if img_box:
@@ -170,7 +181,11 @@ def main(config_file, checkpoint_file, train_json, val_json, test_path):
                 with col2:
                     st.header("Predict bbox")
                     show_prediction(
-                        st.session_state.model, "train", img_box, *classes.values()
+                        st.session_state.model,
+                        "train",
+                        img_box,
+                        threshold,
+                        *classes.values(),
                     )
         st.markdown(read_markdown_file("box_color.md"), unsafe_allow_html=True)
     with tab2:
@@ -179,7 +194,7 @@ def main(config_file, checkpoint_file, train_json, val_json, test_path):
 
 if __name__ == "__main__":
     config_file = "/opt/ml/baseline/Experiment/yolov3/yolo.py"
-    checkpoint_file = "/opt/ml/baseline/work_dirs/swin/best.pt"
+    checkpoint_file = "/opt/ml/baseline/work_dirs/yolo/best_bbox_mAP_epoch_37.pth"
     train_json = "../dataset/train_randomsplit_2022.json"
     val_json = "../dataset/val_randomsplit_2022.json"
     test_path = "../dataset/test/"
