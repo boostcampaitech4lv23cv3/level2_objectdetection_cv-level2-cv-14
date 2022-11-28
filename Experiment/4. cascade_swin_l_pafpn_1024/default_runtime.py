@@ -1,17 +1,17 @@
 checkpoint_config = dict(interval=1)
 # yapf:disable
 log_config = dict(
-    interval=100,
+    interval=500,
     hooks=[
         dict(type="TextLoggerHook"),
         dict(
             type="MMDetWandbHook",
             init_kwargs={
                 "project": "cascade_swin-l_pfpn_1024",
-                "name": "cascade_swin-l-1024",
+                "name": "cascade_swin-l-1024+sudo_0.95",
                 "entity": "level2_object-detection-cv14",
             },
-            interval=100,
+            interval=500,
             log_checkpoint=False,
             log_checkpoint_metadata=True,
             num_eval_images=0,

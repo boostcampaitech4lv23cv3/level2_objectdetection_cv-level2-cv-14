@@ -3,7 +3,7 @@ import pandas as pd
 from split_traindata import split_dataset
 
 
-def sudo(submis_path="submission.csv", random_seed=2022, threshold=0.5):
+def sudo(submis_path="submission.csv", random_seed=2022, threshold=0.95):
     """
     Args:
         submis_path (str, optional): sudolabel할 submisiion 파일의 path를 입력해주세요.".
@@ -16,27 +16,30 @@ def sudo(submis_path="submission.csv", random_seed=2022, threshold=0.5):
         data_train = json.load(f)
     submission = pd.read_csv(submis_path)
     annotations, count = [], 0
-    for idx, pred in enumerate(submission.PredictionString.str.split(" ")):
-        N = len(pred) // 6
-        for i in range(N):
-            cla, cof, x, y, w, h = pred[6 * i : 6 * i + 6]
-            if float(cof) > 0.5:
-                ano = {
-                    "image_id": idx + 10000,
-                    "category_id": int(cla),
-                    "area": float(w) * float(h),
-                    "bbox": [float(x), float(y), float(w), float(h)],
-                    "iscrowd": 0,
-                    "id": count + len(data_train["annotations"]),
-                }
-                annotations.append(ano)
-                count += 1
+    for idx, pred in enumerate((submission.PredictionString.str.split(" "))):
+        if not isinstance(pred, float):
+            N = len(pred) // 6
+            for i in range(N):
+                cla, cof, x, y, w, h = pred[6 * i : 6 * i + 6]
+                if float(cof) > threshold:
+                    ano = {
+                        "image_id": idx + 10000,
+                        "category_id": int(cla),
+                        "area": float(w) * float(h),
+                        "bbox": [float(x), float(y), float(w), float(h)],
+                        "iscrowd": 0,
+                        "id": count + len(data_train["annotations"]),
+                    }
+                    annotations.append(ano)
+                    count += 1
 
     data_test["annotations"] = annotations
     data_test["images"] = [
         data_test["images"][i]
         for i in set(i["image_id"] - 10000 for i in data_test["annotations"])
     ]
+    print("추가된 annotations",len(data_test["annotations"]))
+    print("추가된 images",len(data_test["images"]))
     for i in data_test["images"]:
         i["id"] += 10000
     sudo_train, _ = split_dataset(
@@ -51,4 +54,4 @@ def sudo(submis_path="submission.csv", random_seed=2022, threshold=0.5):
 
 
 if __name__ == "__main__":
-    sudo()
+    sudo(submis_path="output.csv")

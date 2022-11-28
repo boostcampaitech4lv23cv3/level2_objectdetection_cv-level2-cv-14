@@ -7,12 +7,12 @@ log_config = dict(
         dict(
             type="MMDetWandbHook",
             init_kwargs={
-                "project": "test-project",
-                "name": "yolov3",
+                "project": "test sudo",
+                "name": "yolov3_Nosudo",
                 "entity": "level2_object-detection-cv14",
             },
-            interval=100,
-            log_checkpoint=True,
+            interval=500,
+            log_checkpoint=False,
             log_checkpoint_metadata=True,
             num_eval_images=0,
         ),
