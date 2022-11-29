@@ -1,6 +1,8 @@
 mmdet_base = "/opt/ml/baseline/Experiment"
 
-_base_ = [f"{mmdet_base}/4. cascade_swin_l_pafpn_1024/cascade_swin-t_pafpn_1024.py"]
+_base_ = [
+    f"{mmdet_base}/cascade_rcnn_pafpn_convnext-t/cascade_rcnn_pafpn_convnext-t.py"
+]
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True
 )
