@@ -51,6 +51,7 @@ def split_dataset(input_json, val_ratio, random_seed):
     print(f"write {output_val_json}")
     with open(output_val_json, "w") as val_writer:
         json.dump(val_data, val_writer)
+    return train_data, val_data
 
 
 if __name__ == "__main__":

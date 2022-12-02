@@ -8,13 +8,13 @@ log_config = dict(
             type="MMDetWandbHook",
             init_kwargs={
                 "project": "cascade_rcnn_pafpn_swin-t",
-                "name": "dcn_fold",
+                "name": "loss_adam_lr, No weight decay",
                 "entity": "level2_object-detection-cv14",
             },
             interval=100,
             log_checkpoint=False,
             log_checkpoint_metadata=True,
-            num_eval_images=20,
+            num_eval_images=0,
         ),
     ],
 )
