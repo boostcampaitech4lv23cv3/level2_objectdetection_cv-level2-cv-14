@@ -1,6 +1,6 @@
 # dataset settings
 dataset_type = "CocoDataset"
-data_root = "./dataset/"
+data_root = "../dataset/"
 classes = (
     "General trash",
     "Paper",
