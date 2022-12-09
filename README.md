@@ -36,10 +36,7 @@
 
 <img width="150%" src="./image/sample.png"/>
 
-|Class|Box|Class|Box|Class|Box|Class|Box|Class|Box|
-|:---|:---|:---|:---|:---|:---|:---|:---|:---|:---|
-|General_trash|<span style="background-color:rgb(255,0,0)">　　　</span>|Paper|<span style="background-color:rgb(255, 128, 0)">　　　</span>|Paper_pack|<span style="background-color:rgb(255, 255, 0)">　　　</span>|Metal|<span style="background-color:rgb(128, 255, 0)">　　　</span>|Glass|<span style="background-color:rgb(0, 255, 255)">　　　</span>|
-|Plastic|<span style="background-color:rgb(0, 128, 255)">　　　</span>|Styrofoam|<span style="background-color:rgb(0, 0, 255)">　　　</span>|Plastic_bag|<span style="background-color:rgb(127, 0, 255)">　　　</span>|Battery|<span style="background-color:rgb(255, 0, 255)">　　　</span>|Clothing|<span style="background-color:rgb(128, 128, 128)">　　　</span>|
+<img width="200%" src="./image/class_box.png"/>
 ***
 
 ## Team role
@@ -80,8 +77,8 @@
 | :---: | :---: | :---: | :---: | :---: |
 | VariFocalNet | 52.8 | 50.6 | 7h 00m 7s | 102s |
 | TOOD | 48.5 | 42.3 | 6h 35m 59s | 136s |
-| Deformable-DETR | 42.1 |  | 13h 39m 15s | 98s |
-| Cascade-RCNN | 48.9 |  | 1h 43m 11s | 75s |
+| Deformable-DETR | 42.1 | - | 13h 39m 15s | 98s |
+| Cascade-RCNN | 48.9 | - | 1h 43m 11s | 75s |
 
 ### Backbone
 
@@ -90,12 +87,12 @@
 **Model type: Cascade RCNN** 
 
 | Backbone | mAP50 (val) | mAP50 (LB) | Training Time | Inference Time(validation) |
-| --- | --- | --- | --- | --- |
-| ResNeSt | 52.6 |  | 3h 10m 2s | 161s |
-| ResNet strikes back | 52.5 |  | 1h 42m 3s | 66s |
-| Swin-tiny | 51.9 |  | 2h 54m 1s | 112s |
-| ConvNeXt-tiny | 50.3 |  | 2h 30m 2s | 103s |
-| PVT | 56.1 |  | 3h 34m 46s | 152s |
+| :---: | :---: | :---: | :---: | :---: |
+| ResNeSt | 52.6 | - | 3h 10m 2s | 161s |
+| ResNet strikes back | 52.5 | - | 1h 42m 3s | 66s |
+| Swin-tiny | 51.9 | - | 2h 54m 1s | 112s |
+| ConvNeXt-tiny | 50.3 | - | 2h 30m 2s | 103s |
+| PVT | 56.1 | - | 3h 34m 46s | 152s |
 
 ### Augmentation
 
@@ -120,7 +117,7 @@
 - **Multi-scale TestTimeAugmentation** 적용 (512, 512) ~ (1024, 1024)까지 (128, 128) 씩 증가시켜 적용
 
 |  | LB Score | Inference Time |
-| --- | --- | --- |
+| :---: | :---: | :---: |
 | Swin-Large without multi-scale TTA | 0.6132 | 2225s |
 | Swin-Large with multi-scale TTA | 0.6317 | 6901s |
 
